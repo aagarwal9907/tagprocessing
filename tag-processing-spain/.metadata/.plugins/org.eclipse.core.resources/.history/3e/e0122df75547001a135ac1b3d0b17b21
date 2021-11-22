@@ -1,0 +1,20 @@
+package com.vasantlab.tag.processingservice;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Service;
+
+import com.vasantlab.model.CommPortDataInput;
+import com.vasantlab.tag.processingservice.interfaces.CommPortReadCommandService;
+@Service("commPortReadConfigService")
+public class CommPortReadCommandServiceImpl implements CommPortReadCommandService{
+
+	@Override
+	public void readCommand(String recevieData) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+}

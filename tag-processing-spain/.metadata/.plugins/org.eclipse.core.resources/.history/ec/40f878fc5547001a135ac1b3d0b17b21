@@ -1,0 +1,16 @@
+package com.vasantlab.tag.processingservice;
+
+
+import com.vasantlab.tag.processingservice.interfaces.CommPortReadCommandService;
+@Service("commPortReadConfigService")
+public class CommPortReadCommandServiceImpl implements CommPortReadCommandService{
+
+	@Override
+	public void readCommand(String recevieData) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+}

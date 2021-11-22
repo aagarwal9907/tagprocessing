@@ -1,0 +1,5 @@
+package com.vasantlab.file.processinterface;
+
+public interface RFIDReportProcessFile {
+public void getReportFileCreation(String orderId,String barCode);
+}

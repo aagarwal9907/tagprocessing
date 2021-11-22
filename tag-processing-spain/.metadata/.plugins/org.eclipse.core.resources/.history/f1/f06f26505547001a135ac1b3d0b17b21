@@ -1,0 +1,14 @@
+package com.vasantlab.tag.state;
+
+import org.springframework.stereotype.Service;
+
+@Service("readConfigService")
+public class TagReadConfiguration implements TagCommunicationStateInterface {
+
+	@Override
+	public void doAction(String stateId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

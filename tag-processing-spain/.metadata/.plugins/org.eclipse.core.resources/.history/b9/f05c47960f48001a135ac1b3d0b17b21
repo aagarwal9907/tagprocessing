@@ -1,0 +1,48 @@
+package com.vasantlab.util;
+
+public enum CommPortWriteConfigurationCommand {
+	 WRITE_PT1("91"), WRITE_PT2("92"),WRITE_PT3("93"), WRITE_PT4("94"), WRITE_PT5("95"),WRITE_PT6 ("96"),WRITE_PT7("97"),
+	 WRITE_M11 ("98"),WRITE_M21("99"),WRITE_M31("9A"),WRITE_M12("9B"),WRITE_M22("9C"),WRITE_M32("9D"),WRITE_M13("A0"),
+	 WRITE_M23("A1"),WRITE_M33 ("A2"),WRITE_M14 ("A3"),WRITE_M24("A4"),WRITE_M34("A5"),WRITE_DP1 ("A6"),WRITE_DP2("A7"),
+	 WRITE_DP3 ("A8"),
+	 
+	READ_PT1("81"), 
+	READ_PT2("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x82,(byte)0x30,(byte)0x30}"),
+	READ_PT3("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x83,(byte)0x30,(byte)0x30}"), 
+	READ_PT4("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x84,(byte)0x30,(byte)0x30}"), 
+	READ_PT5("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x85,(byte)0x30,(byte)0x30}"),
+	READ_PT6 ("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x86,(byte)0x30,(byte)0x30}"),
+	READ_PT7("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x87,(byte)0x30,(byte)0x30}"),
+	READ_M11 ("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x88,(byte)0x30,(byte)0x30}"),
+	READ_M21("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x89,(byte)0x30,(byte)0x30}"),
+	READ_M31("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x8A,(byte)0x30,(byte)0x30}"),
+	READ_M12("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x8B,(byte)0x30,(byte)0x30}"),
+	READ_M22("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x8C,(byte)0x30,(byte)0x30}"),
+	READ_M32("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0x8D,(byte)0x30,(byte)0x30}"),
+	READ_M13("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB0,(byte)0x30,(byte)0x30}"),
+	READ_M23(" new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB1,(byte)0x30,(byte)0x30}"),
+	READ_M33 (" new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB2,(byte)0x30,(byte)0x30}"),
+	READ_M14 ("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB3,(byte)0x30,(byte)0x30}"),
+	READ_M24("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB4,(byte)0x30,(byte)0x30}"),
+	READ_M34(" new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB5,(byte)0x30,(byte)0x30}"),
+	READ_DP1 ("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB6,(byte)0x30,(byte)0x30}"),
+	READ_DP2("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB7,(byte)0x30,(byte)0x30}"),
+	READ_DP3 ("new byte[]{(byte)0xAA,(byte)0xAA,(byte)0x24,(byte)0x02,(byte)0xB8,(byte)0x30,(byte)0x30}");
+
+	private String writeConfigurationCommand;
+
+	private CommPortWriteConfigurationCommand(String writeConfigurationCommand) {
+		this.writeConfigurationCommand = writeConfigurationCommand;
+	}
+	 public String getWriteConfigurationCommand() {
+			return writeConfigurationCommand;
+		}
+	 public static CommPortWriteConfigurationCommand fromString(String text) {
+			for (CommPortWriteConfigurationCommand command : CommPortWriteConfigurationCommand.values()) {
+				if (command.getWriteConfigurationCommand().equalsIgnoreCase(text)) {
+					return command;
+				}
+			}
+			return null;
+		}
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1580375516011_0" label="tag-processing-spain" name="tag-processing-spain">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/com-connector" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/thinkmagiclib" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/tag-persistency" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/tag-driver" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/tag-processor" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1580375540016_1" label="Window Working Set" name="Aggregate for window 1580375540015"/>
+</workingSetManager>

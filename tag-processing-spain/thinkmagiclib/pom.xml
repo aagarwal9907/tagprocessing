@@ -1,0 +1,110 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+        <groupId>com.vasantlab</groupId>
+		<artifactId>tag-processing-spain</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+    
+	<artifactId>thinkmagiclib</artifactId>
+	<packaging>pom</packaging>
+
+	<name>thinkmagiclib</name>
+	<url>http://maven.apache.org</url>
+
+
+	<build>
+		<plugins>
+		<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>install-aeitag</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>mvn.cmd</executable>
+							<!-- <workingDirectory>${basedir}</workingDirectory> -->
+							<arguments>
+								<argument>install:install-file</argument>
+								<argument>-Dfile=${basedir}/lib/aeitagdecoder.jar</argument>
+								<argument>-DgroupId=com.thingmagic</argument>
+								<argument>-DartifactId=aeitagdecoder</argument>
+								<argument>-Dversion=1.0.0</argument>
+								<argument>-Dpackaging=jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-ltkjava</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+
+							<executable>mvn.cmd</executable>
+							<!-- <workingDirectory>${basedir}</workingDirectory> -->
+
+							<arguments>
+								<argument>install:install-file</argument>
+								<argument>-Dfile=${basedir}/lib/ltkjava-1.0.0.6.jar</argument>
+								<argument>-DgroupId=com.thingmagic</argument>
+								<argument>-DartifactId=ltkjava</argument>
+								<argument>-Dversion=1.0.0.6</argument>
+								<argument>-Dpackaging=jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-ltkthing</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+
+							<executable>mvn.cmd</executable>
+							<!-- <workingDirectory>${basedir}</workingDirectory> -->
+							<arguments>
+								<argument>install:install-file</argument>
+								<argument>-Dfile=${basedir}/lib/ltkthingmagic.jar</argument>
+								<argument>-DgroupId=com.thingmagic</argument>
+								<argument>-DartifactId=ltkthingmagic</argument>
+								<argument>-Dversion=1.0.0</argument>
+								<argument>-Dpackaging=jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-mercury</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>mvn.cmd</executable>
+							<!-- <workingDirectory>${basedir}</workingDirectory> -->
+							<arguments>
+								<argument>install:install-file</argument>
+								<argument>-Dfile=${basedir}/lib/mercuryapi.jar</argument>
+								<argument>-DgroupId=com.thingmagic</argument>
+								<argument>-DartifactId=mercuryapi</argument>
+								<argument>-Dversion=1.0.0</argument>
+								<argument>-Dpackaging=jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

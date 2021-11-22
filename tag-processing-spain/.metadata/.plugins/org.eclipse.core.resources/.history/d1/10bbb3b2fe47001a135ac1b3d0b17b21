@@ -1,0 +1,19 @@
+package com.vasantlab.util;
+
+public enum CommPortWriteConfigurationCommand {
+	 PT1("0x91"), PT2("0x92"),PT3("0x93"), PT4("0x94"), PT5("0x95"),PT6 ("0x96"),PT7("0x97"),
+	 M11 ("0x98"),M21("0x99"), M31("0x9A"),M12("0x9B"),M22("0x9C"),M32("0x9D"),M13("0xA0"),
+	 M23(" 0xA1"),M33 (" 0xA2"),M14 ("0xA3"),M24("0xA4"),M34(" 0xA5"),DP1 ("0xA6"),DP2("0xA7"),
+	 DP3 (" 0xA8");
+	 
+	
+
+	private String writeConfigurationCommand;
+
+	private CommPortWriteConfigurationCommand(String writeConfigurationCommand) {
+		this.writeConfigurationCommand = writeConfigurationCommand;
+	}
+	 public String getWriteConfigurationCommand() {
+			return writeConfigurationCommand;
+		}
+}

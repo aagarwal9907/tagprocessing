@@ -1,0 +1,5 @@
+package com.vasantlab.file.process;
+
+public class RFIDReportProcessFileImpl implements RFIDReportProcessFile{
+
+}

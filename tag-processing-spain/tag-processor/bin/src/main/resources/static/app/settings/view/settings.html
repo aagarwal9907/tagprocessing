@@ -1,0 +1,25 @@
+<div  ng-controller="Comsettingscontroller">
+	<div class="row jumbotron text-center">
+		<div class="col-md-12 col-xs-12">COM Controller Settings page. This page allows the harward configurations to be changed. The <span style="color:green;">F1-F30</span> command can be used to set and get the configuration to and from the controller.</div>
+	</div>
+	<hr />
+	<div alert-message></div>
+	<form name="comSetting">
+		<div class="form-group ">
+			 <label for="selFunction">Function</label>
+			 <div class="form-group">
+				 <select class="form-control" title="Function that need to be retrieved/updated"   ng-options="item.value for item in comDevice.comFn"   name="selFunction" id="selFunction" ng-model="comDevice.selFunction">
+				 </select>
+			 </div>
+		</div>	
+		<div class="form-group ">
+			 <label for="fnValue" >Value for the function</label>
+			 <div class="form-group">
+				 <input type="text" class="form-control" placeholder="Enter Value for function" name="fnValue" id="fnValue" ng-model="comDevice.fnValue" />
+			 </div>
+		</div>
+	    <input type="submit" class="btn btn-primary btn-default" name="setFn" value="set {{comDevice.selFunction.value}}" ng-click="setFunction();" />
+		<input type="submit" class="btn btn-primary" name="getFn"	value="get {{comDevice.selFunction.value}}"  ng-click="getFunction();"/>	 
+	</form>
+	
+</div>

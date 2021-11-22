@@ -1,0 +1,11 @@
+package com.vasantlab.tag.state;
+
+public class TagConfiguration implements TagCommunicationStateInterface {
+
+	@Override
+	public void doAction(String stateId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

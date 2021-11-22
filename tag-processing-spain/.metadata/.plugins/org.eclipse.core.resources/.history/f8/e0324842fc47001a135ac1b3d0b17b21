@@ -1,0 +1,33 @@
+package com.vasantlab.tag.processingservice;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Service;
+
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.model.CommPortDataInput;
+import com.vasantlab.tag.processingservice.interfaces.CommPortWriteCommandService;
+import com.vasantlab.util.CommPortCommandUtil;
+import com.vasantlab.util.DataConverter;
+@Service
+public class CommPortWriteCommandServiceImpl implements CommPortWriteCommandService,ApplicationEventPublisherAware {
+	private ApplicationEventPublisher publisher;
+	@Override
+	public void writeCommand(CommPortDataInput commPortDataInput) {
+		byte msbbyte = 0;
+		byte lsbbyte = 0;
+		int data = commPortDataInput.getCommandData();
+		String hexData = DataConverter.toHex(data);
+		if(hexData.length()<=2){
+			msbbyte = 0x00;
+			
+		}
+		publisher.publishEvent(new CommPortEvent(new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x04,(byte) 0x03, (byte) 0x30, (byte) 0x30 }));
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+}

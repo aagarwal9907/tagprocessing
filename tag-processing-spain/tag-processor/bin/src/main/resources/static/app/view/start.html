@@ -1,0 +1,33 @@
+<div  ng-controller="TagOperationController">
+<div class="jumbotron text-center">
+            <h1>Setup Tagging</h1>
+            <p>This page allow you to find an order Id upload an excel and then start up the tagging process.Ensure that tagging antenna is connected on LAN. The Stepper motor controller is connected on COM port.</p>
+</div>
+	<div class="row text-center">
+		<div class="col-md-12 col-xs-12">{{greeting}}</div>
+	</div>
+	<hr />
+	<form name="orderForm" novalidate>
+		<div class="form-group ">
+			 <label for="brandName" >Brand Name</label>
+			 <div class="form-group">
+				 <input type="text" class="form-control" placeholder="Enter Brand Name" name="brandName" id="brandName" ng-model="order.brandName" />
+			 </div>
+		</div>
+
+		<div class="form-group ">
+			 <label for="orderid" >Order Id</label>
+			 <div class="form-group" ng-class="{ 'has-error' : orderForm.orderid.$invalid && !orderForm.orderid.$pristine }">
+				 <input type="text" class="form-control"	placeholder="Enter Order Id" name="orderid" id="orderid" ng-model="order.orderid" ng-minlength="6" />
+				 <p ng-show="orderForm.orderid.$error.minlength" class="help-block">OrderId	is too short.</p>
+			 </div>
+		</div>
+	    <input type="button" class="btn btn-primary" name="search"	value="Search" />
+			 
+		<div class="form-group" >
+			<label for="orderFile">Order File Input</label> 
+			<input type="file" class="form-control-file" id="orderFile">
+		</div>
+		
+	</form>
+</div>

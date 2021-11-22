@@ -1,0 +1,63 @@
+package com.vasantlab.tag.processingservice;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Service;
+
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.model.CommPortDataInput;
+import com.vasantlab.tag.processingservice.interfaces.CommPortWriteCommandService;
+import com.vasantlab.util.CommPortCommandUtil;
+import com.vasantlab.util.CommPortReadConfigurationCommand;
+import com.vasantlab.util.CommPortWriteConfigurationCommand;
+import com.vasantlab.util.DataConverter;
+
+@Service
+public class CommPortWriteCommandServiceImpl implements CommPortWriteCommandService, ApplicationEventPublisherAware {
+	private ApplicationEventPublisher publisher;
+
+	@Override
+	public void writeCommand(CommPortDataInput commPortDataInput) {
+		if (commPortDataInput.getCommandStatus().equals("READ")) {
+			StringBuilder command = new StringBuilder();
+			command.append("READ_").append(commPortDataInput.getCommand());
+			CommPortWriteConfigurationCommand readCommand = CommPortWriteConfigurationCommand
+					.fromString(command.toString());
+			publisher.publishEvent(new CommPortEvent(readCommand.getCommandByte()));
+		} else if (commPortDataInput.getCommandStatus().equals("WRITE")) {
+			byte msbbyte = 0;
+			byte lsbbyte = 0;
+			byte byteData = 02;
+			byte[] newByte;
+			int data = commPortDataInput.getCommandData();
+			StringBuilder command = new StringBuilder();
+			command.append("WRITE_").append(commPortDataInput.getCommand());
+			CommPortWriteConfigurationCommand readCommand = CommPortWriteConfigurationCommand
+					.fromString(command.toString());
+			String commandByte = "0x"+readCommand.getWriteConfigurationCommand();
+			String hexData = DataConverter.toHex(data);
+			if (hexData.length() == 0) {
+				newByte = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, byteData,(byte)S, (byte) 0x03, (byte) 0x30,
+						(byte) 0x30 };
+				publisher.publishEvent(new CommPortEvent(newByte));
+			}else if (hexData.length() <= 2) {
+				byteData = 03;
+				newByte = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, byteData,(byte)S, (byte) 0x03, (byte) 0x30,
+						(byte) 0x30 };
+				publisher.publishEvent(new CommPortEvent(newByte));
+			}else if(hexData.length() > 2){
+				byteData = 04;
+				newByte = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, byteData,(byte)S, (byte) 0x03, (byte) 0x30,
+						(byte) 0x30 };
+				publisher.publishEvent(new CommPortEvent(newByte));
+			}
+		}
+		
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+}

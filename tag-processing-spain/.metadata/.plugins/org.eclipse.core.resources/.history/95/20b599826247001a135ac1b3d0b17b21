@@ -1,0 +1,11 @@
+package com.vasantlab.util;
+
+public enum CommPortReadConfigurationCommand {
+ PT1("81");
+ private String readCommand;
+
+private CommPortReadConfigurationCommand(String readCommand) {
+	this.readCommand = readCommand;
+} 
+ 
+}

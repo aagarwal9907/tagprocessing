@@ -1,0 +1,13 @@
+package com.vasantlab.file.process;
+
+import com.vasantlab.file.processinterface.RFIDReportProcessFile;
+
+public class RFIDReportProcessFileImpl implements RFIDReportProcessFile{
+
+	@Override
+	public void getReportFileCreation(String orderId, String barCode) {
+		
+		
+	}
+
+}

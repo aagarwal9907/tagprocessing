@@ -1,0 +1,17 @@
+package com.vasantlab.tag.processingservice;
+
+import org.springframework.stereotype.Service;
+
+import com.vasantlab.model.TagProcessingInput;
+import com.vasantlab.tag.processingservice.exception.TagProcessingException;
+import com.vasantlab.tag.processingservice.interfaces.TagReportService;
+@Service
+public class TagReportServiceImpl implements TagReportService{
+
+	@Override
+	public void ReportProcessing(TagProcessingInput tagProcessingInput) throws TagProcessingException {
+		
+		
+	}
+
+}

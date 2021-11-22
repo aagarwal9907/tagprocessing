@@ -1,0 +1,23 @@
+package com.vasantlab.file.process;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.vasanthlab.dao.data.service.interfaces.TagDataFeedService;
+import com.vasantlab.file.processinterface.RFIDReportProcessFile;
+@Component("rfidReportProcessFile")
+public class RFIDReportProcessFileImpl implements RFIDReportProcessFile{
+	
+	private static Logger log = LoggerFactory.getLogger(RFIDReportProcessFileImpl.class);
+	
+	@Autowired
+	TagDataFeedService tagDataFeedService;
+	@Override
+	public void getReportFileCreation(String orderId, String barCode) {
+		
+		
+	}
+
+}

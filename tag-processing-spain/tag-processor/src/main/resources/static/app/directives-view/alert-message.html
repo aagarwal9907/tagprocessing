@@ -1,0 +1,19 @@
+<div class="col-md-12 col-xs-12">
+	<div ng-switch="messageData.alert">
+		<div ng-switch-when="error" ng-show="messageData.showMessage" class="alert alert-error alert-dismissible fade show" role="alert" id="alertMessage">{{messageData.message}}
+				 <button type="button" class="close"data-dismiss="alert" aria-label="Close">
+	   		 	<span aria-hidden="true">&times;</span>
+	 		 </button>
+		</div>
+		<div ng-switch-when="warning" ng-show="messageData.showMessage" class="alert alert-warning alert-dismissible fade show" role="alert" id="alertMessage">{{messageData.message}}
+				 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+	   		 	<span aria-hidden="true">&times;</span>
+	 		 </button>
+		</div>
+		<div ng-switch-when="default" ng-show="messageData.showMessage" class="alert alert-success alert-dismissible fade show" role="alert" id="alertMessage">{{messageData.message}}
+				 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+	   		 	<span aria-hidden="true">&times;</span>
+	 		 </button>
+		</div>	
+	</div>
+</div>

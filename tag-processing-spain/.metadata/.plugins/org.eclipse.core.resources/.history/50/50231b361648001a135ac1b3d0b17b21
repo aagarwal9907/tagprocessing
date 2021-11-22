@@ -1,0 +1,88 @@
+package com.vasantlab.tag.processingservice;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Component;
+import com.vasanthlab.dao.data.service.interfaces.RFIDDataService;
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.data.tables.RFIDData;		
+import com.vasantlab.model.DataProcessingStatus;
+import com.vasantlab.model.ProcessingContext;
+import com.vasantlab.model.TagInfo;
+import com.vasantlab.tag.processingservice.interfaces.TagReadProcessingService;
+import com.vasantlab.tag.service.exception.TagStatus;
+import com.vasantlab.util.CachingUtil;
+import com.vasantlab.util.CommPortCommandUtil;
+import com.vasantlab.util.TagValidation;
+
+@Component
+public class TagReadProcessingServiceImpl implements TagReadProcessingService, ApplicationEventPublisherAware {
+	private static Logger log=LoggerFactory.getLogger(TagReadProcessingServiceImpl.class);
+	@Autowired
+	private ApplicationEventPublisher publisher;
+	@Autowired
+	private TagValidation tagOperationService;
+	@Autowired
+	private RFIDDataService rfidDataService;
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+	@Override
+	public void tagDataRead() {
+		
+		ProcessingContext readProcessingContext = CachingUtil.cachingRFIdInterfaceAdaptor.get("Adaptor").tagRead();
+		
+		RFIDData rfidData = CachingUtil.cachingProcessRFIDData.get("WritenData");
+		
+		if(rfidData.getStatus()== null){
+		TagInfo tagInfo	 = tagOperationService.epcValidation(readProcessingContext, rfidData.getEpc(),rfidData.getAccess_Password(),rfidData.getKill_Password(),rfidData.getUser_Memory());
+	    TagStatus validation = tagInfo.getTagStatus();
+			if (validation == TagStatus.VALIDATIONOK) {
+				rfidData.setStatus(DataProcessingStatus.DO.toString());
+				rfidData.setCount(String.valueOf(tagInfo.getReadCount()));
+				rfidData.setRssi(String.valueOf(tagInfo.getRssi()));
+				rfidData.setTime(String.valueOf(tagInfo.getTimeStamp()));
+				rfidData.setTidData(tagInfo.getTidData());
+				
+				rfidDataService.saveRFIDData(rfidData);
+				log.info("We are able to read all data from Tag for"+rfidData.getEpc());
+				CachingUtil.cachingProcessRFIDData.clear();
+				CachingUtil.cachingRFIdInterfaceAdaptor.clear();
+				if(CachingUtil.cachingRFIDDatalist.get("RFIDData").size()==0){
+					CachingUtil.clearCachingData();
+				}
+				publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.READOKCOMMAND));
+			} else if (validation == TagStatus.VALIDATIONFAIL) {
+				
+				rfidData.setStatus(DataProcessingStatus.FA.toString());
+				
+				rfidDataService.saveRFIDData(rfidData);
+				log.info("We are not able to read all data from Tag for"+rfidData.getEpc()+".So tag mark as Fail");
+				CachingUtil.cachingProcessRFIDData.clear();
+				CachingUtil.cachingRFIdInterfaceAdaptor.clear();
+				if(CachingUtil.cachingRFIDDatalist.get("RFIDData").size()==0){
+					CachingUtil.clearCachingData();
+				}
+				publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.READEFAILCOMMAND));
+			}	
+			
+		}else{
+			rfidData.setDate(java.time.LocalDate.now().toString());
+			rfidDataService.saveRFIDData(rfidData);
+			
+			CachingUtil.cachingProcessRFIDData.clear();
+			CachingUtil.cachingRFIdInterfaceAdaptor.clear();
+			CachingUtil.cachingReceiveByte.clear();
+			publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.READEFAILCOMMAND));
+		}
+		
+
+		
+	}
+
+}

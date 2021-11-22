@@ -1,0 +1,28 @@
+package com.vasantlab.util;
+
+public enum CommPortWriteConfigurationCommand {
+	 WRITE_PT1("91"), WRITE_PT2("92"),WRITE_PT3("93"), WRITE_PT4("94"), WRITE_PT5("95"),WRITE_PT6 ("96"),WRITE_PT7("97"),
+	 WRITE_M11 ("98"),WRITE_M21("99"),WRITE_M31("9A"),WRITE_M12("9B"),WRITE_M22("9C"),WRITE_M32("9D"),WRITE_M13("A0"),
+	 WRITE_M23("A1"),WRITE_M33 ("A2"),WRITE_M14 ("A3"),WRITE_M24("A4"),WRITE_M34("A5"),WRITE_DP1 ("A6"),WRITE_DP2("A7"),
+	 WRITE_DP3 ("A8"),READ_PT1("81"), READ_PT2("82"),READ_PT3("83"), READ_PT4("84"), READ_PT5("85"),READ_PT6 ("86"),
+	READ_PT7("87"),READ_M11 ("88"),READ_M21("89"),READ_M31("8A"),READ_M12("8B"),READ_M22("8C"),READ_M32("8D"),READ_M13("B0"),
+	READ_M23("B1"),READ_M33 ("B2"),READ_M14 ("B3"),READ_M24("B4"),READ_M34("B5"),READ_DP1 ("B6"),READ_DP2("B7"),READ_DP3("B8");
+
+	private String writeConfigurationCommand;
+	private byte[] commandByte;
+	
+	private CommPortWriteConfigurationCommand(String writeConfigurationCommand) {
+		this.writeConfigurationCommand = writeConfigurationCommand;
+	}
+	 public String getWriteConfigurationCommand() {
+			return writeConfigurationCommand;
+		}
+	 public static CommPortWriteConfigurationCommand fromString(String text) {
+			for (CommPortWriteConfigurationCommand command : CommPortWriteConfigurationCommand.values()) {
+				if (command.getWriteConfigurationCommand().equalsIgnoreCase(text)) {
+					return command;
+				}
+			}
+			return null;
+		}
+}

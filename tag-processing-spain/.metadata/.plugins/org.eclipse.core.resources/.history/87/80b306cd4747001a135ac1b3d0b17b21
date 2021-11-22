@@ -1,0 +1,95 @@
+package com.vasantlab.tag.processingservice;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Service;
+
+import com.vasanthlab.dao.data.service.interfaces.RFIDDataService;
+import com.vasanthlab.dao.data.service.interfaces.RFIDErrorLogDataService;
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.data.tables.RFIDData;
+import com.vasantlab.data.tables.RFIDErrorLog;
+import com.vasantlab.tag.processingservice.interfaces.TagErrorProcessingService;
+import com.vasantlab.util.CachingUtil;
+import com.vasantlab.util.CommPortCommandUtil;
+import com.vasantlab.util.ErrorCommunicationState;
+
+
+@Service("tagErrorProcessingService")
+public class TagErrorProcessingServiceImpl implements TagErrorProcessingService,ApplicationEventPublisherAware{
+	
+	private static Logger log=LoggerFactory.getLogger(TagErrorProcessingServiceImpl.class);
+	
+	private ApplicationEventPublisher publisher;
+	@Autowired
+	private RFIDErrorLogDataService rfidErrorLogDataService;
+	@Autowired
+	private RFIDDataService rfidDataService;
+	@Override
+	public void tagErrorProcessing(String errorCode) {
+		if(errorCode == "02" || errorCode=="03"){		
+			List<RFIDData> tagRfidData = rfidDataService.finddata(CachingUtil.caching.get("orderId"), CachingUtil.caching.get("barcode"));
+		}
+		
+		CachingUtil.cachingErrorCode.set("ErrorCode", errorCode);
+		ErrorCommunicationState state=ErrorCommunicationState.fromString(errorCode);
+		log.info(state.getErrorCommunicationState());
+		
+		
+		if(state.getCommandByte()!=null){
+			RFIDErrorLog rfidErrorLog = new RFIDErrorLog();
+			rfidErrorLog.setOrder_id(CachingUtil.caching.get("orderId"));
+			rfidErrorLog.setBar_code(CachingUtil.caching.get("barcode"));
+			rfidErrorLog.setError_code(errorCode);
+			rfidErrorLog.setMsg(state.getErrorCommunicationState());
+			rfidErrorLog.setDate(java.time.LocalDate.now().toString());
+			rfidErrorLog.setTime(java.time.LocalTime.now().toString());
+			//epc need to set
+			
+			
+			
+			//rfidErrorLogDataService.saveRFIDErrorLogData(rfidErrorLog);
+			
+			publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.ERRORCODECOMMAND));
+		}
+		//According to the error code display error message and send command to h/w
+		/*if(errorCode.equals("0033")){
+			log.info("No Tag above Writer & Reader");
+			publisher.publishEvent(new CommPortEvent(CommPortCommand.ERRORCODECOMMAND));
+		}else if(errorCode.equals("0133")){
+			log.info("Tag out of Hopper but not above Writer");
+			publisher.publishEvent(new CommPortEvent(CommPortCommand.ERRORCODECOMMAND));
+		}else if(errorCode.equals("0233")){
+			log.info("Tag not out of Hopper but reached above Writer");
+			publisher.publishEvent(new CommPortEvent(CommPortCommand.ERRORCODECOMMAND));
+		}else if(errorCode.equals("0333")){
+			log.info("Tag out of Writer but not reached Reader");
+			
+		}else if(errorCode.equals("0433")){
+			log.info("Tag reached Reader, No tag above Writer (Is this is the last Tag!)");
+			///////????//////???????????????
+		}else if(errorCode.equals("0533")){
+			log.info("Tag reached Reader, Tag out of Hopper but not above Writer");
+			publisher.publishEvent(new CommPortEvent(CommPortCommand.ERRORCODECOMMAND));
+		}else if(errorCode.equals("F533")){
+			log.info("Tag not moved out of Writer");	
+		}else if(errorCode.equals("020A")){
+			log.info("Error before tag on writter 1st time");
+			
+		}else if(errorCode.equals("030A")){
+			log.info("Error before tag on writter 1st time");
+		}*/
+		
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+}

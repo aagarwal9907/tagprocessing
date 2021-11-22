@@ -1,0 +1,5 @@
+package com.vasantlab.tag.state;
+
+public class TagConfiguration {
+
+}

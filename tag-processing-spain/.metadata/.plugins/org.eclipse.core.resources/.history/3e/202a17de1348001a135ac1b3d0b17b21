@@ -1,0 +1,80 @@
+package com.vasantlab.util;
+
+public enum CommPortWriteConfigurationCommand {
+	 WRITE_PT1("91",new byte[]{(byte)(0x91)}), 
+	 WRITE_PT2("92",new byte[]{(byte)(0x92)}),
+	 WRITE_PT3("93",new byte[]{(byte)(0x93)}), 
+	 WRITE_PT4("94",new byte[]{(byte)(0x94)}), 
+	 WRITE_PT5("95",new byte[]{(byte)(0x95)}),
+	 WRITE_PT6 ("96",new byte[]{(byte)(0x96)}),
+	 WRITE_PT7("97",new byte[]{(byte)(0x97)}),
+	 WRITE_M11 ("98",new byte[]{(byte)(0x98)}),
+	 WRITE_M21("99",new byte[]{(byte)(0x99)}),
+	 WRITE_M31("9A",new byte[]{(byte)(0x94)}),
+	 WRITE_M12("9B",new byte[]{(byte)(0x9B)}),
+	 WRITE_M22("9C",new byte[]{(byte)(0x9C)}),
+	 WRITE_M32("9D",new byte[]{(byte)(0x9D)}),
+	 WRITE_M13("A0",new byte[]{(byte)(0xA0)}),
+	 WRITE_M23("A1",new byte[]{(byte)(0xA1)}),
+	 WRITE_M33 ("A2",new byte[]{(byte)(0xA2)}),
+	 WRITE_M14 ("A3",new byte[]{(byte)(0xA3)}),
+	 WRITE_M24("A4",new byte[]{(byte)(0xA4)}),
+	 WRITE_M34("A5",new byte[]{(byte)(0xA5)}),
+	 WRITE_DP1 ("A6",new byte[]{(byte)(0xA6)}),
+	 WRITE_DP2("A7",new byte[]{(byte)(0xA7)}),
+	 WRITE_DP3 ("A8",new byte[]{(byte)(0xA8)}),
+	 
+	 
+	 
+	 READ_PT1("81",CommPortCommandUtil.READ_PT1), 
+	 READ_PT2("82",CommPortCommandUtil.READ_PT2),
+	 READ_PT3("83",CommPortCommandUtil.READ_PT3),
+	 READ_PT4("84",CommPortCommandUtil.READ_PT4), 
+	 READ_PT5("85",CommPortCommandUtil.READ_PT5),
+	 READ_PT6 ("86",CommPortCommandUtil.READ_PT6),
+	READ_PT7("87",CommPortCommandUtil.READ_PT7),
+	READ_M11 ("88",CommPortCommandUtil.READ_M11),
+	READ_M21("89",CommPortCommandUtil.READ_M21),
+	READ_M31("8A",CommPortCommandUtil.READ_M31),
+	READ_M12("8B",CommPortCommandUtil.READ_M12),
+	READ_M22("8C",CommPortCommandUtil.READ_M22),
+	READ_M32("8D",CommPortCommandUtil.READ_M32),
+	READ_M13("B0",CommPortCommandUtil.READ_M13),
+	READ_M23("B1",CommPortCommandUtil.READ_M23),
+	READ_M33 ("B2",CommPortCommandUtil.READ_M33),
+	READ_M14 ("B3",CommPortCommandUtil.READ_M14),
+	READ_M24("B4",CommPortCommandUtil.READ_M24),
+	READ_M34("B5",CommPortCommandUtil.READ_M34),
+	READ_DP1 ("B6",CommPortCommandUtil.READ_DP1),
+	READ_DP2("B7",CommPortCommandUtil.READ_DP2),
+	READ_DP3("B8",CommPortCommandUtil.READ_DP3);
+
+	private String writeConfigurationCommand;
+	private byte[] commandByte;
+	
+	
+	 private CommPortWriteConfigurationCommand(String writeConfigurationCommand, byte[] commandByte) {
+		this.writeConfigurationCommand = writeConfigurationCommand;
+		this.commandByte = commandByte;
+	}
+
+
+	public String getWriteConfigurationCommand() {
+		return writeConfigurationCommand;
+	}
+
+
+	public byte[] getCommandByte() {
+		return commandByte;
+	}
+
+
+	public static CommPortWriteConfigurationCommand fromString(String text) {
+			for (CommPortWriteConfigurationCommand command : CommPortWriteConfigurationCommand.values()) {
+				if (command.getWriteConfigurationCommand().equalsIgnoreCase(text)) {
+					return command;
+				}
+			}
+			return null;
+		}
+}

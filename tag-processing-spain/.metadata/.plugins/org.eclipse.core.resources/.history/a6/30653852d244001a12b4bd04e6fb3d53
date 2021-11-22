@@ -1,0 +1,15 @@
+package com.vasantlab.file.process;
+
+import org.springframework.stereotype.Component;
+
+import com.vasantlab.file.processinterface.RFIDReportProcessFile;
+@Component("rfidReportProcessFile")
+public class RFIDReportProcessFileImpl implements RFIDReportProcessFile{
+
+	@Override
+	public void getReportFileCreation(String orderId, String barCode) {
+		
+		
+	}
+
+}

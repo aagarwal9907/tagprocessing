@@ -1,0 +1,25 @@
+package com.vasantlab.util;
+
+public enum CommunicationState {
+	START("30"), WRITESTART("02"), READSTART("04"), ERRORCODE("08");
+
+	private String communicationState;
+
+	private CommunicationState(String communicationState) {
+		this.communicationState = communicationState;
+
+	}
+
+	public String getState() {
+		return this.communicationState;
+	}
+
+	public static CommunicationState fromString(String text) {
+		for (CommunicationState state : CommunicationState.values()) {
+			if (state.communicationState.equalsIgnoreCase(text)) {
+				return state;
+			}
+		}
+		return null;
+	}
+}

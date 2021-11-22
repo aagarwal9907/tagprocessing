@@ -1,0 +1,99 @@
+package com.vasantlab.util;
+
+public class CommPortCommandUtil {
+	public final static byte[] STARTOKCOMMAND = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x02,
+			(byte) 0x31, (byte) 0x30, (byte) 0x30 };
+
+	public final static byte[] WRITEOKCOMMAND = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x02,
+			(byte) 0x03, (byte) 0x30, (byte) 0x30 };
+
+	public final static byte[] READOKCOMMAND = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x02,
+			(byte) 0x05, (byte) 0x30, (byte) 0x30 };
+
+	public final static byte[] READEFAILCOMMAND = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x02,
+			(byte) 0x06, (byte) 0x30, (byte) 0x30 };
+
+	public final static byte[] ERRORCODECOMMAND = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x03,
+			(byte) 0x90, (byte) 0x00, (byte) 0x30, (byte) 0x30 };
+
+	public final static String WRITEREPEAT = "AAAA2402023030";
+	
+	final static String ERRORSTARTCOMMAND = "AAAA24023031";
+	final static String ERRORREADCOMMAND = "AAAA24020433";
+	final static String ERRORWRITECOMMAND = "AAAA24020232";
+
+	public static boolean getCommand(String errorCode, String recevieData) {
+		boolean result = false;
+		switch (errorCode) {
+		case "0033":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "0133":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "0233":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "0333":
+			if (recevieData.equalsIgnoreCase(ERRORREADCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "0433":
+			if (recevieData.equalsIgnoreCase(ERRORREADCOMMAND)) {
+				CachingUtil.cachingError04Command.set("04ErrorCommand", ERRORREADCOMMAND);
+				result = true;
+			} else if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)
+					&& CachingUtil.cachingError04Command.get("04ErrorCommand").equalsIgnoreCase(ERRORREADCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				CachingUtil.cachingError04Command.clear();
+				result = true;
+			}
+			break;
+		case "0533":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "F533":
+			if (recevieData.equalsIgnoreCase(ERRORREADCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "020A":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "030A":
+			if (recevieData.equalsIgnoreCase(ERRORSTARTCOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		case "0202":
+			if (recevieData.equalsIgnoreCase(ERRORWRITECOMMAND)) {
+				CachingUtil.cachingErrorCode.clear();
+				result = true;
+			}
+			break;
+		default:
+			System.out.println("no match");
+		}
+		return result;
+	}
+
+}

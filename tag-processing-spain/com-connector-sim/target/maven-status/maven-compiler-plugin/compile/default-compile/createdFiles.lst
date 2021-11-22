@@ -1,0 +1,3 @@
+com\vasanthlab\serialport\comm\CommPortEvent.class
+com\vasanthlab\serialport\comm\CommPortReceiverTest.class
+com\vasanthlab\serialport\comm\CommPortSenderTest.class

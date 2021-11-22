@@ -1,0 +1,148 @@
+package com.vasanthlab.serialport.comm;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Scanner;
+import java.util.TooManyListenersException;
+
+import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+
+/**
+ * <p>This class is getting created as bean from the <code>OrderTagProcessorApplication</code>.
+ * The only argument that is passed to this class to connect is the <b>COMPORT</b> value like <i>COM3,COM6</i> which ever is applicable
+ * </p>
+ *  
+ */
+public class TwoWaySerialComm {
+	
+	private static Logger log = LoggerFactory.getLogger(TwoWaySerialComm.class);
+	
+	public TwoWaySerialComm() {
+		super();
+	}
+
+	private InputStream in;
+
+	private OutputStream out;
+
+	private SerialPort serialPort;
+	public static boolean allowWrite=false;
+	public InputStream getIn() {
+		return in;
+	}
+
+	public OutputStream getOut() {
+		return out;
+	}
+	
+	public SerialPort getSerialPort(){
+		return serialPort;
+	}
+	
+	public void connect(String portName) throws Exception {
+		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+		if (portIdentifier.isCurrentlyOwned()) {
+			log.error("Error: Port is currently in use");
+		} else {
+			CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
+
+			if (commPort instanceof SerialPort) {
+				serialPort= (SerialPort) commPort;
+				serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+						SerialPort.PARITY_NONE);
+				in = serialPort.getInputStream();
+				out = serialPort.getOutputStream();
+
+			} else {
+				log.error("Error: Only serial ports are handled by this code.");
+			}
+		}
+	}
+
+	//testing only class
+	public static class SerialReader implements  SerialPortEventListener  {
+		InputStream in;
+		private byte[] buffer = new byte[8];
+		public SerialReader(InputStream in) {
+			this.in = in;
+		}
+		 public void serialEvent(SerialPortEvent arg0) {
+	            int data;
+	            try
+	            {
+	                int len = 0;
+	                while ( ( data = in.read()) > -1 )
+	                {
+	                    if ( data == '\n' ) {
+	                        break;
+	                    }
+	                    buffer[len++] = (byte) data;
+	                }
+	                if(Hex.encodeHex(buffer).toString().contains("aaaa"));
+	                {
+	                	allowWrite=true;
+	                }
+	                System.out.println(Hex.encodeHex(buffer));
+	            }
+	            catch ( IOException e )
+	            {
+	                e.printStackTrace();
+	                System.exit(-1);
+	            }             
+	        }
+	}
+
+	public static class SerialWriter {
+		OutputStream out;
+
+		public SerialWriter(OutputStream out) {
+			this.out = out;
+		}
+
+		public void run() {
+			try {
+				while(true){
+				if(allowWrite==true){
+				 Scanner scan=new Scanner(System.in);
+				 String read=scan.nextLine();
+				
+				 System.out.println("Writing data:");
+				 //new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0x24, (byte) 0x03,(byte) 0x31,(byte) 0x30, (byte) 0x30 }
+				 this.out.write(read.getBytes());
+				 	break;
+				 }
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+
+			}
+		}
+	}
+	
+	//For testing purpose
+	public static void main(String[] args) {
+		TwoWaySerialComm obj = new TwoWaySerialComm();
+	
+	try {
+			obj.connect("COM6");
+			obj.getSerialPort().addEventListener(new SerialReader(obj.getIn()) );
+			obj.getSerialPort().notifyOnDataAvailable(true);
+			new SerialWriter(obj.getOut()).run();
+			//new Thread(new SerialReader(obj.getIn())).start();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+}

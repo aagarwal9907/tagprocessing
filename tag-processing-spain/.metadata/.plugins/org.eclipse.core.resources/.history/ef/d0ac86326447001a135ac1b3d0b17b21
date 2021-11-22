@@ -1,0 +1,36 @@
+package com.vasantlab.tag.processingservice;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import com.vasantlab.tag.processingservice.interfaces.CommPortReadCommandService;
+import com.vasantlab.util.CommPortReadConfigurationCommand;
+import com.vasantlab.util.DataConverter;
+
+
+@Service("commPortReadConfigService")
+public class CommPortReadCommandServiceImpl implements CommPortReadCommandService{
+	private static Logger log = LoggerFactory.getLogger(CommPortReadCommandServiceImpl.class);
+	@Override
+	public void readCommand(char[] recevieData) {
+		StringBuilder commandCode = new StringBuilder();
+		commandCode.append(recevieData[8]).append(recevieData[9]);
+		CommPortReadConfigurationCommand command =CommPortReadConfigurationCommand.fromString(commandCode.toString());
+		String configCommand = command.getReadConfigurationCommand();
+		int decimalData = 0;
+		StringBuilder byteCode = new StringBuilder();
+		byteCode.append(recevieData[6]).append(recevieData[7]);
+		if(byteCode.equals("02")){
+			decimalData = DataConverter.hexadecimalToDecimal("0");
+		}else if(byteCode.equals("03")){
+			
+		}else if(byteCode.equals("04")){
+			
+		}
+		
+	}
+
+
+
+}

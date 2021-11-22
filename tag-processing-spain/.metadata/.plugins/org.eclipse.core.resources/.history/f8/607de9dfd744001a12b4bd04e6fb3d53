@@ -1,0 +1,20 @@
+package com.vasantlab.tag.processingservice;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.vasantlab.file.processinterface.RFIDReportProcessFile;
+import com.vasantlab.model.TagProcessingInput;
+import com.vasantlab.tag.processingservice.exception.TagProcessingException;
+import com.vasantlab.tag.processingservice.interfaces.TagReportService;
+@Service
+public class TagReportServiceImpl implements TagReportService{
+@Autowired
+private RFIDReportProcessFile rfidReportProcessFile;
+	@Override
+	public void ReportProcessing(TagProcessingInput tagProcessingInput) throws TagProcessingException {
+		
+		
+	}
+
+}

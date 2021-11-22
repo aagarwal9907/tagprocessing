@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "CLASSPATH:log4j.dtd">
+<log4j:configuration debug="false"	xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+	<appender name="sys-console"
+		class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value=" %-5p--%d{yyyy-MM-dd HH:mm:ss} [%t] %c{10}(%L) %m%n" />
+		</layout>
+	</appender>
+	<appender name="file-rolling-app"
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="logs/tag-process.log" />
+		<param name="MaxFileSize" value="1MB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value=" %-5p--%d{yyyy-MM-dd HH:mm:ss} [%t] %c{10}(%L) %m%n" />
+		</layout>
+	</appender>
+	<logger	name="com.vasantlab" additivity="false">
+		<level value="info" />
+		<appender-ref ref="sys-console" />
+		<appender-ref ref="file-rolling-app" />
+	</logger>
+	<logger
+		name="com.vasanthlab" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="sys-console" />
+		<appender-ref ref="file-rolling-app" />
+	</logger>
+	<logger name="org.springframework" additivity="false">
+		<level value="info" />
+		<appender-ref ref="sys-console" />
+		<appender-ref ref="file-rolling-app" />
+	</logger>
+	<root>
+		<priority value="error" />		
+	</root>
+
+</log4j:configuration>

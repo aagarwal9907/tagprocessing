@@ -1,0 +1,84 @@
+package com.vasantlab.tag.processingservice;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Component;
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.data.tables.RFIDData;
+import com.vasantlab.model.DataProcessingStatus;
+import com.vasantlab.model.ProcessingContext;
+import com.vasantlab.tag.processingservice.interfaces.TagWriteProcessingService;
+import com.vasantlab.tag.service.exception.TagStatus;
+import com.vasantlab.tagdriver.RFIdDriverReference;
+import com.vasantlab.tagdriver.RFIdInterfaceAdaptor;
+import com.vasantlab.util.CachingUtil;
+import com.vasantlab.util.CommPortCommandUtil;
+
+@Component
+public class TagWriteProcessingServiceImpl implements TagWriteProcessingService, ApplicationEventPublisherAware {
+	private static Logger log = LoggerFactory.getLogger(TagWriteProcessingServiceImpl.class);
+	private ApplicationEventPublisher publisher;
+
+	@Autowired
+	private RFIdDriverReference rfIdDriverReference;
+
+	private RFIdInterfaceAdaptor rfIdAdaptor;
+
+	private ProcessingContext writeProcessingContext;
+
+	@Override
+	public void tagDataWrite(String orderId, String barcode) {
+		List<RFIDData> rfidData = CachingUtil.cachingRFIDDatalist.get("RFIDData");
+
+		if ((CachingUtil.cachingProcessRFIDData.get("WritenData") != null)
+				&& (CachingUtil.cachingReceiveByte.get("receiveByte").toString() == CommPortCommandUtil.WRITEREPEAT)) {
+			writeProcessingContext = rfIdAdaptor.tagWrite(CachingUtil.cachingProcessRFIDData.get("WritenData"),
+					CachingUtil.cachingFeedData.get("FeedData"));
+			verifiyWriteData(CachingUtil.cachingProcessRFIDData.get("WritenData"));
+			CachingUtil.cachingReceiveByte.clear();
+			publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.WRITEOKCOMMAND));
+		}
+		else if (rfidData != null) {
+			if (rfidData.size() > 0) {
+
+				for (RFIDData data : rfidData) {
+					rfIdAdaptor = rfIdDriverReference.getDriverReference();
+
+					writeProcessingContext = rfIdAdaptor.tagWrite(data, CachingUtil.cachingFeedData.get("FeedData"));
+					verifiyWriteData(data);
+					CachingUtil.cachingReceiveByte.clear();
+					publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.WRITEOKCOMMAND));
+				}
+			}
+		}
+	}
+
+	private void verifiyWriteData(RFIDData data) {
+		if (writeProcessingContext.getTagError() == TagStatus.WRITEOK) {
+			CachingUtil.cachingRFIdInterfaceAdaptor.set("Adaptor", rfIdAdaptor);
+			data.setOrderId(CachingUtil.caching.get("orderId"));
+			CachingUtil.cachingProcessRFIDData.set("WritenData", data);
+			CachingUtil.cachingRFIDDatalist.get("RFIDData").remove(data);
+			log.info("We are able to write all data for" + data.getEpc());
+
+		} else if (writeProcessingContext.getTagError() == TagStatus.WRITEFAIL) {
+			// exception
+			CachingUtil.cachingRFIdInterfaceAdaptor.set("Adaptor", rfIdAdaptor);
+			data.setStatus(DataProcessingStatus.FA.toString());
+			data.setOrderId(CachingUtil.caching.get("orderId"));
+			CachingUtil.cachingProcessRFIDData.set("WritenData", data);
+			CachingUtil.cachingRFIDDatalist.get("RFIDData").remove(data);
+			log.info("We are not able to write all data for" + data.getEpc());
+		}
+	}
+
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+}

@@ -1,0 +1,7 @@
+package com.vasantlab.tag.processingservice.interfaces;
+
+import com.vasantlab.model.CommPortDataInput;
+
+public interface CommPortReadCommandService {
+	public void readCommand(String recevieData);
+}

@@ -1,0 +1,80 @@
+<div  ng-controller="TagOperationController">
+<div class="jumbotron text-center">
+            <h1>Setup Tagging</h1>
+            <p>This page allow you to find an order Id upload an excel and then start up the tagging process.Ensure that tagging antenna is connected on LAN. The Stepper motor controller is connected on COM port.</p>
+</div>
+	<div class="row text-center">
+		<div class="col-md-12 col-xs-12"><h2>{{greeting}}</h2></div>
+	</div>
+	<hr />
+	<div alert-message></div>
+ <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModallabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="errorModallabel">Device Error Occured {{errorData.state}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		{{errorData.message}}
+	  <div class="label" style="bold">Instruction-{{errorAction[errorData.state].instruction}}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-primary" ng-show="errorAction[errorData.state].action!=''" ng-click="takeAction();">Action</button>
+      </div>
+    </div>
+  </div>
+</div>
+	<form name="orderForm" novalidate ng-hide="hideForm">
+		<div class="form-group ">
+			 <label for="orderid" >Order Id</label>
+			 <div class="form-group" ng-class="{ 'has-error' : orderForm.orderid.$invalid && !orderForm.orderid.$pristine }">
+				 <input type="text" class="form-control" placeholder="Enter Order Id" name="orderid" id="orderid" ng-model="order.orderid" ng-minlength="6" required />
+				 <p ng-show="(orderForm.orderid.$touched || orderForm.orderid.$untouched) && orderForm.orderid.$invalid" class="help-block">OrderId is mandatory</p>
+				 <p ng-show="orderForm.orderid.$error.minlength" class="help-block">OrderId	is too short</p>
+			 </div>
+		</div>
+		<div class="form-group ">
+			 <label for="brandName" >Barcode</label>
+			 <div class="form-group">
+				 <input type="text" class="form-control" placeholder="Enter Barcode" name="barcode" id="barcode" ng-model="order.barcode" required />
+				 <p ng-show="(orderForm.barcode.$touched || orderForm.barcode.$untouched) && orderForm.barcode.$invalid" class="help-block">Barcode is mandatory</p>
+			 </div>
+		</div>
+	    <input type="button" class="btn btn-primary" name="Start" ng-show="allowStart"	value="Start" ng-disabled="orderForm.$invalid" ng-click="startJob();"/>
+	</form>
+	<br/><hr/>
+	<div class="container border border-sucess">
+	<div class="row">
+	  <div class="col-md-12 col-xs-12 d-inline bg-light text-center"><h3>{{title}}</h3></div>
+	</div>
+	<div class="row">
+	  <div class="col-md-12 col-xs-12">&nbsp;</div>
+	</div>
+	 <div class="row">
+        <div class="col-md-12 col-xs-12">
+       <table class="table table-striped">
+		<thead>
+          <tr>
+	   <th style="padding-right:0px;font-size:12px;">EPC</th>
+	   <th style="padding-right:0px;font-size:12px;">User Memory</th>
+	   <th style="padding-right:0px;font-size:12px;">Access Password</th>
+	   <th style="padding-right:0px;font-size:12px;">Kill Password</th>
+	   <th style="padding-right:0px;font-size:12px;" >Status</th>
+	   <th style="padding-right:0px;font-size:12px;" >RSSI</th>
+	   <th style="padding-right:0px;font-size:12px;">Count</th>
+	   <th style="padding-right:0px;font-size:12px;">Tid Data</th>
+	   <th style="padding-right:0px;font-size:12px;" >Date</th>
+	   <th style="padding-right:0px;font-size:12px;" >Read/Write Err</th>
+       </tr>
+       </thead>
+	    <tbody id="tag">
+        </tbody>
+	   </table>
+ 	  </div>
+	</div>
+	 
+</div>

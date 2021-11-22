@@ -1,0 +1,152 @@
+package com.vasantlab.tag.processingservice;
+
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.List;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.stereotype.Service;
+
+import com.vasanthlab.dao.data.service.interfaces.RFIDDataService;
+import com.vasanthlab.dao.data.service.interfaces.TagDataFeedService;
+import com.vasanthlab.serialport.comm.CommPortEvent;
+import com.vasantlab.data.tables.RFIDData;
+import com.vasantlab.data.tables.TagDataFeed;
+import com.vasantlab.file.process.RRIDFileProcessImpl;
+import com.vasantlab.file.processinterface.OrderIdProcessFile;
+import com.vasantlab.model.TagProcessingInput;
+import com.vasantlab.tag.processingservice.exception.TagProcessingException;
+import com.vasantlab.tag.processingservice.interfaces.TagStartService;
+import com.vasantlab.util.CachingUtil;
+import com.vasantlab.util.CommPortCommandUtil;
+
+@Service("startService")
+public class TagStartServiceImpl implements TagStartService, ApplicationEventPublisherAware {
+
+	private static Logger log = LoggerFactory.getLogger(TagStartServiceImpl.class);
+
+	private ApplicationEventPublisher publisher;
+	@Autowired
+	TagDataFeedService tagDataFeedService;
+	@Autowired
+	RRIDFileProcessImpl rfidProcessFile;
+	@Autowired
+	OrderIdProcessFile orderIdProcessFile;
+	@Autowired
+	private RFIDDataService rfidDataService;
+
+	@Override
+	public void StartProcessing(TagProcessingInput tagProcessingInput) throws TagProcessingException {
+
+		String orderId = tagProcessingInput.getOrderId();
+		String barcode = tagProcessingInput.getBarcode();
+		if (StringUtils.isEmpty(CachingUtil.cachingErrorCode.get("ErrorCode"))) {
+			int dataCount = tagDataFeedService.findBarcode(orderId, barcode);
+
+			if (dataCount == 0 && (CachingUtil.cachingFeedData.get("FeedData") == null)
+					&& (CachingUtil.cachingRFIDDatalist.get("RFIDData") == null)) {
+				CachingUtil.caching.set("orderId", orderId);
+				CachingUtil.caching.set("barcode", barcode);
+
+				List<TagDataFeed> tagData = null;
+				try {
+					tagData = orderIdProcessFile.getProcessFile(orderId);
+				} catch (FileNotFoundException e) {
+					throw new TagProcessingException(e.getLocalizedMessage());
+				}
+
+				String XLSX_FILE_PATH = findFilePath(tagData);
+
+				if (!StringUtils.isEmpty(XLSX_FILE_PATH)) {
+					tagDataFeedService.saveFileRecords(CachingUtil.cachingFeedData.get("FeedData"));
+					log.info("Save data from first file for {} and {}", orderId, barcode);
+					List<RFIDData> rfidData = rfidProcessFile
+							.getRFIDProcessFile(CachingUtil.cachingFeedData.get("FeedData"));
+					CachingUtil.cachingRFIDDatalist.set("RFIDData", rfidData);
+					log.info("Put RFID Data into memory");
+					CachingUtil.cachingReceiveByte.clear();
+					publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.STARTOKCOMMAND));
+				} else {
+					log.error("For the given OrderId and Barcode not able to find FilePath !!");
+					throw new TagProcessingException("For the given OrderId and Barcode not able to find FilePath");
+				}
+			} else if (dataCount != 0 && (CachingUtil.cachingFeedData.get("FeedData") == null)
+					&& (CachingUtil.cachingRFIDDatalist.get("RFIDData") == null)) {
+
+				CachingUtil.caching.set("orderId", orderId);
+				CachingUtil.caching.set("barcode", barcode);
+
+				TagDataFeed feedData = tagDataFeedService.findTagData(orderId, barcode);
+
+				List<RFIDData> tagRfidData = rfidDataService.finddata(orderId, barcode);
+				List<RFIDData> rfidData = rfidProcessFile.getRFIDProcessFile(feedData);
+				if (tagRfidData.size() != rfidData.size()) {
+					if (tagRfidData.size() == 0) {
+						CachingUtil.cachingFeedData.set("FeedData", feedData);
+						CachingUtil.cachingRFIDDatalist.set("RFIDData", rfidData);
+						log.info("Put RFID Data into memory");
+						CachingUtil.cachingReceiveByte.clear();
+						publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.STARTOKCOMMAND));
+					} else {
+						for (RFIDData dbData : tagRfidData) {
+							for (RFIDData fileData : rfidData) {
+								if (dbData.getOrderId().equalsIgnoreCase(fileData.getOrderId())
+										&& dbData.getBarcode().equalsIgnoreCase(fileData.getBarcode())
+										&& dbData.getEpc().equalsIgnoreCase(fileData.getEpc())) {
+									rfidData.remove(fileData);
+								}
+							}
+						}
+						CachingUtil.cachingFeedData.set("FeedData", feedData);
+						CachingUtil.cachingRFIDDatalist.set("RFIDData", rfidData);
+						log.info("Put RFID Data into memory");
+						CachingUtil.cachingReceiveByte.clear();
+						publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.STARTOKCOMMAND));
+					}
+				} else {
+					log.error("this order id and barcode already used for processing");
+					throw new TagProcessingException(String
+							.format("This orderId: %s and barcode: %s already used for processing", orderId, barcode));
+				}
+
+			} else if (dataCount != 0 && (CachingUtil.cachingFeedData.get("FeedData") != null)
+					&& (CachingUtil.cachingRFIDDatalist.get("RFIDData") != null)) {
+				CachingUtil.cachingReceiveByte.clear();
+				publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.STARTOKCOMMAND));
+			}
+		} else if ((CachingUtil.cachingFeedData.get("FeedData") != null)
+				&& (CachingUtil.cachingRFIDDatalist.get("RFIDData") != null)) {
+			CachingUtil.cachingReceiveByte.clear();
+			publisher.publishEvent(new CommPortEvent(CommPortCommandUtil.STARTOKCOMMAND));
+		}
+
+	}
+
+	private String findFilePath(List<TagDataFeed> tagData) {
+		String filePath = null;
+		Iterator<TagDataFeed> iterator = tagData.iterator();
+		while (iterator.hasNext()) {
+			TagDataFeed tagDataFeed = iterator.next();
+			if (tagDataFeed.getIOS_NO().equals(CachingUtil.caching.get("orderId"))
+					&& tagDataFeed.getBarcode_details().equals(CachingUtil.caching.get("barcode"))) {
+				filePath = tagDataFeed.getFile_path();
+				TagDataFeed data = new TagDataFeed();
+				data = tagDataFeed;
+				CachingUtil.cachingFeedData.set("FeedData", data);
+				log.info("Put data into memoery");
+			}
+		}
+		return filePath;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+
+}
